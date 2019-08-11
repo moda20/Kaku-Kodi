@@ -1,0 +1,177 @@
+.sidebar {
+  @videoHeight: 140px;
+  @controlsHeight: 25px;
+  @toolbarHeight: 40px;
+
+  height: 100%;
+  border-right: 1px solid #cccccc;
+
+  .menus {
+    // 155px is the height of player
+    height: ~"calc(100% - @{videoHeight} - @{controlsHeight})";
+    overflow: auto;
+
+    ul li {
+      font-size: 16px;
+      border-left: 5px solid #ffffff;
+
+      &.seperator {
+        border-bottom: 1px solid #cccccc;
+        margin: 5px 0;
+      }
+
+      &.add-playlist {
+        a {
+          color: #2195f7;
+        }
+      }
+
+      &.active {
+        border-left-color: #93c6f2;
+        background-color: #d9f8fa;
+        transition: background-color 0.2s ease-in-out;
+      }
+
+      &.active .icon {
+        color: #2195f7;
+      }
+
+      a {
+        display: block;
+        padding: 5px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .icon {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .player {
+
+    // so many hacks here ...
+    &.tv-mode {
+      #player {
+        position: absolute;
+        top: @toolbarHeight;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: auto;
+        z-index: 5;
+      }
+
+      .control-buttons {
+        @offset: 5px;
+
+        position: absolute;
+        top: @toolbarHeight + @offset;
+        right: @offset;
+
+        .btn {
+          display: none;
+        }
+
+        .tv-button {
+          display: inline;
+          position: relative;
+          background: transparent;
+          z-index: 6;
+        }
+      }
+    }
+
+    .track {
+      width: 200px;
+      height: 200px;
+      background-image: url(../images/track-placeholder.png);
+      background-color: #efefef;
+      background-size: 100%;
+    }
+
+    .control-buttons {
+      .btn {
+        outline: none;
+        border: 0;
+        width: calc(100% / 7); // we have 7 buttons
+        color: #ccc; // sync with videojs's style
+        background-color: #000;
+        // there are some unconsistent styles on Windows,
+        // so we have to override it directly.
+        padding: 2px 6px 3px;
+        border-radius: 0;
+      }
+
+      .btn[disabled] {
+        opacity: 1;
+      }
+
+      .btn:active {
+        background-color: #444;
+      }
+
+      .btn:hover {
+        color: lighten(#ccc, 10%);
+      }
+
+      // We need to additionally align the mode word
+      .btn.repeat-button {
+        position: relative;
+
+        .mode {
+          position: absolute;
+          bottom: 0;
+          right: 8px;
+          font-size: 10px;
+          background-color: rgba(0, 0, 0, 0.7);
+        }
+      }
+
+      .btn.external-button {
+        i {
+          vertical-align: middle;
+        }
+      }
+
+      .btn.cast-button {
+        img {
+          width: 15px;
+          height: 12px;
+          margin-top: -2px;
+          object-fit: none;
+          object-position: 0 0;
+        }
+
+        &:hover img {
+          object-position: -15px 0;
+        }
+
+        &.is-connecting img {
+          object-position: 0 -12px;
+        }
+
+        &.is-connecting:hover img {
+          object-position: -15px -12px;
+        }
+
+        &.is-casting img {
+          object-position: 0 -24px;
+        }
+
+        &.is-casting:hover img {
+          object-position: -15px -24px;
+        }
+      }
+    }
+
+    #player {
+      // to make spinner at the right place
+      position: relative;
+      // We have to override its height directly
+      height: @videoHeight;
+    }
+  }
+}

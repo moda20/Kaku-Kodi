@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+const shell = require('shelljs');
+const env = process.env.NODE_ENV || 'development';
+
+// compile all base stuffs first
+shell.exec('NODE_ENV=' + env + ' npm run compile');
+
+// start to create builds
+shell.exec('rm -rf dist');
+shell.exec('npm run beforebuild');
+shell.exec('npm run build:mac');
+shell.exec('npm run build:linux');
+shell.exec('npm run build:windows');

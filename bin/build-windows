@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+const shell = require('shelljs');
+
+// 32 bit
+shell.exec('./node_modules/.bin/build --windows --ia32 --x64  -p onTagOrDraft');

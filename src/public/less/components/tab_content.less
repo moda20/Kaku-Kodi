@@ -1,0 +1,56 @@
+// Basically this is the style only for first level tab-content
+.right > .tab-content {
+  height: 100%;
+  overflow: auto;
+
+  .header {
+    position: relative;
+    display: flex;
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    margin: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 30px;
+
+    i {
+      margin-right: 10px;
+    }
+  }
+
+  .control-buttons {
+    margin-left: auto;
+
+    i {
+      pointer-events: none;
+    }
+
+    button {
+      margin-right: 5px;
+    }
+
+    button:last-child {
+      margin-right: 0;
+    }
+
+    .btn-group {
+      button {
+        margin-right: 0;
+      }
+
+      button:last-child {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .tab-pane {
+    padding: 10px;
+    overflow-x: hidden;
+  }
+}

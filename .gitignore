@@ -1,0 +1,13 @@
+*.swp
+.DS_Store
+dist
+src/public/css
+config/*.production.json
+env.json
+node_modules
+.module_cache
+kaku/
+kaku.bundled.js
+kaku.bundled.js.map
+npm-debug.log
+.lvimrc

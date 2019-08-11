@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+const shell = require('shelljs');
+const colors = require('colors/safe');
+
+const env = process.env.NODE_ENV || 'development';
+const CSC_NAME = process.env.CSC_NAME;
+let cmd = './node_modules/.bin/build --mac -p onTagOrDraft';
+
+if (CSC_NAME) {
+  cmd = `CSC_NAME='${CSC_NAME}' ` + cmd;
+}
+
+if (env === 'production' && !CSC_NAME) {
+  console.log(
+    colors.yellow(`[Note] CSC_NAME is missing when creating production build, so the build will not be code-signed`)
+  );
+}
+
+shell.exec(cmd);

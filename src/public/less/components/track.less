@@ -1,0 +1,121 @@
+@import '../includes/variables.less';
+@import '../includes/mixins.less';
+
+.track {
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #efefef;
+}
+
+.track-square {
+  display: inline-block;
+  padding: 5px;
+  margin: 0 10px 5px 0;
+  border: 1px solid #000;
+
+  &.active {
+    border-color: darken(#d9f8fa, 10%);
+    background-color: darken(#d9f8fa, 10%);
+  }
+
+  &:hover {
+    .info {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  img {
+    width: 170px;
+    height: 170px;
+    border-radius: 5px;
+    object-fit: contain;
+  }
+
+  .info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 0 8px 5px;
+  }
+
+  .ribbon {
+    position: absolute;
+    top: 2px;
+    right: -17px;
+    background: rgba(255, 255, 255, 0.8);
+    width: 60px;
+    transform: rotate(45deg);
+    text-align: center;
+    color: black;
+
+    // we need horizontal icon
+    i {
+      transform: rotate(-45deg);
+    }
+  }
+
+  .track-name {
+    font-size: 16px;
+  }
+
+  .track-artist {
+    font-size: 14px;
+  }
+
+  .track-name,
+  .track-artist {
+    .kaku_add_ellipsis();
+  }
+}
+
+.track-list {
+  display: block;
+  height: 30px;
+  margin: 10px 0;
+  color: #000;
+
+  &.active {
+    background-color: #d9f8fa;
+  }
+
+  i {
+    margin: 0 10px;
+    vertical-align: top;
+    line-height: 30px;
+  }
+
+  img {
+    width: 30px;
+    height: 100%;
+    vertical-align: top;
+    object-fit: contain;
+  }
+
+  .icon-wrapper {
+    display: inline-block;
+    width: 32px;
+  }
+
+  .track-name {
+    width: calc(~"100% - 25% - 32px - 30px");
+    text-align: left;
+  }
+
+  .track-artist {
+    width: 25%;
+    text-align: right;
+  }
+
+  .track-name,
+  .track-artist {
+    display: inline-block;
+    line-height: 30px;
+    padding: 0 10px;
+    .kaku_add_ellipsis();
+  }
+}
