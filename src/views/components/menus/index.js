@@ -141,7 +141,7 @@ class MenusComponent extends Component {
                   TabManager.setTab('localvids');
                 }}>
               <i className="icon fa fa-fw fa-lg fa-address-book"></i>
-              <span className="title"><L10nSpan l10nId="sidebar_home"/></span>
+              <span className="title"><L10nSpan l10nId="sidebar_local"/></span>
             </a>
           </li>
           <li role="presentation">

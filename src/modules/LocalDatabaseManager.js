@@ -6,6 +6,8 @@ import DB from "./Database";
 var path = require('path');
 import LocalVideoModel from "../Models/LocalVideoModel";
 import LocalFolderModel from "../Models/LocalFolderModel";
+var fs = require('fs');
+
 
 class LocalDatabaseManager extends EventEmitter {
   constructor() {
@@ -65,7 +67,12 @@ class LocalDatabaseManager extends EventEmitter {
             console.log(data);
             if(data.files){
               for(let i =0; i< data.files.length; i++){
-                folderTrees.push(this.getVideosFromDirectory(data.files[i]));
+                  if(this.verifyVideosBasedOnURI(data.files[i])){
+                      folderTrees.push(this.getVideosFromDirectory(data.files[i]));
+                  }else{
+                      this.deleteFileFromFileStructure(data.files[i]);
+                  }
+
               }
             }
             res(folderTrees);
@@ -150,8 +157,12 @@ class LocalDatabaseManager extends EventEmitter {
         });
   }
 
-  verifyVideosBasedOnURI(){
-
+  verifyVideosBasedOnURI(path){
+      if(fs.existsSync(path)){
+          return true;
+      }else{
+          return false;
+      }
   }
 
 /*

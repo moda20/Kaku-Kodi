@@ -13,6 +13,13 @@ import L10nManager from "../../../modules/L10nManager";
 const loadingPageDOM = document.querySelector('.loading-page');
 const _ = L10nManager.get.bind(L10nManager);
 import toaster from  "../../../modules/toastrWrapper";
+import Modal from 'react-modal';
+import SlidingPane from 'react-sliding-pane';
+import 'react-sliding-pane/dist/react-sliding-pane.css';
+import SlidingPlayerPane from './slidingPane/index';
+import ExtraPlayer from '../ExtraPlayer/KodiPlayer';
+
+
 
 class LocalVideos extends Component {
     constructor(props) {
@@ -21,18 +28,29 @@ class LocalVideos extends Component {
         this.state = {
             tree: [],
             parentTree:[],
-            parentFolderName:["Root"],
+            parentFolderName:[{
+                path:"/",
+                name:"Root"
+            }],
             kodi:{
                 ip:"",
                 port:""
-            }
+            },
+            player:{
+              src:"",
+              active:false,
+                fileName:""
+            },
+            isPaneOpen: false,
         };
 
         this._clickToPlayAll = this._clickToPlayAll.bind(this);
     }
 
+
     componentDidMount() {
         this.getFolders();
+        Modal.setAppElement(this.el);
     }
 
     getFolders(){
@@ -70,6 +88,11 @@ class LocalVideos extends Component {
                                             title:_('kodi_playing_error_title'),
                                             text:_('kodi_playing_error_text'),
                                         });
+                                        KODI.killtheServingServer().then(
+                                            data=>{
+                                                console.log('Server dead');
+                                            }
+                                        );
                                     }
                                 );
 
@@ -78,6 +101,11 @@ class LocalVideos extends Component {
                                     title:_('kodi_playing_error_title'),
                                     text:_('kodi_playing_error_text'),
                                 });
+                                KODI.killtheServingServer().then(
+                                    data=>{
+                                        console.log('Server dead');
+                                    }
+                                );
                             }
                         }
                     )
@@ -88,6 +116,11 @@ class LocalVideos extends Component {
                 title:_('kodi_playing_error_title'),
                 text:_('kodi_playing_error_text'),
             });
+            KODI.killtheServingServer().then(
+                data=>{
+                    console.log('Server dead');
+                }
+            );
         }
 
 
@@ -135,13 +168,14 @@ class LocalVideos extends Component {
 
     navigateForward(index){
         if(
-            this.state.tree[index].children
+            this.state.tree[index].children &&
+            LDB.verifyVideosBasedOnURI(this.state.tree[index].path)
         ){
 
             let temp = this.state.parentTree;
             temp.push(this.state.tree);
             let newParentFolderName = Object.assign([],this.state.parentFolderName);
-            newParentFolderName.push(this.state.tree[index].name);
+            newParentFolderName.push(this.state.tree[index]);
             this.setState({
                 parentTree : temp,
                 tree: this.state.tree[index].children,
@@ -152,17 +186,23 @@ class LocalVideos extends Component {
 
     navigateBackward(){
        if(this.state.parentTree.length > 0){
-           console.log("going back inside")
-           let temp = this.state.parentTree[this.state.parentTree.length-1];
-           let newParentTree = Object.assign([],this.state.parentTree);
-           newParentTree.pop();
-           let newParentFolderName = Object.assign([],this.state.parentFolderName);
-           newParentFolderName.pop();
-           this.setState({
-               parentTree : newParentTree,
-               tree: temp,
-               parentFolderName:newParentFolderName
-           });
+           console.log(`Going to check for Exit FS ${this.state.parentTree[this.state.parentTree.length-1]} ${LDB.verifyVideosBasedOnURI(this.state.parentTree[this.state.parentTree.length-1].path)}`);
+           if(LDB.verifyVideosBasedOnURI(this.state.parentFolderName[this.state.parentTree.length-1].path)){
+               console.log("going back inside")
+               let temp = this.state.parentTree[this.state.parentTree.length-1];
+               let newParentTree = Object.assign([],this.state.parentTree);
+               newParentTree.pop();
+               let newParentFolderName = Object.assign([],this.state.parentFolderName);
+               newParentFolderName.pop();
+               this.setState({
+                   parentTree : newParentTree,
+                   tree: temp,
+                   parentFolderName:newParentFolderName
+               });
+           }else{
+               this.navigateBackwardToSpecificPosition(0);
+           }
+
        }
     }
 
@@ -205,13 +245,19 @@ class LocalVideos extends Component {
 
         if(this.state.parentTree.length==0){
             //this means you are in the root folder and you can delete folders
-            console.log(this.state.tree);
+            let pathtoDelete = this.state.tree[index].path;
             this.RemoveExistingDirectory(this.state.tree[index].path);
             let x = this.state.tree;
             x.splice(index,1);
             this.setState(
                 {
                     tree : x
+                }
+            )
+            toaster.success(
+                {
+                    title:"Folder deleted",
+                    text:'Deleted folder :'+pathtoDelete
                 }
             )
 
@@ -231,9 +277,32 @@ class LocalVideos extends Component {
             marginBottom:0
         };
         console.log(this.state.tree);
+
         return (
-            <div className="tracks-slot">
-                <div className="header clearfix">
+            <div ref={ref => this.el = ref}>
+                <SlidingPlayerPane
+                    title={this.state.fileName}
+                    isPaneOpen={this.state.isPaneOpen}
+                    onClose={()=>{
+                        this.setState({
+                            isPaneOpen:false
+                        })
+                    }}
+                    from='bottom'
+                    width="100%"
+                >
+                    {
+                        this.state.player.active==true?<ExtraPlayer
+                            src={this.state.player.src}
+                            width="100%"
+                            height="100%"
+                        >
+
+                        </ExtraPlayer>:<div></div>
+                    }
+                </SlidingPlayerPane>
+                <div className="tracks-slot">
+                    <div className="header clearfix">
 
                         {/*<i className={headerIconClass}></i>
                         {headerSpan}*/}
@@ -242,62 +311,78 @@ class LocalVideos extends Component {
                             <li><a href="#">Library</a></li>
                             <li className="active">Data</li>*/}
                             {
-                                this.state.parentFolderName.map((name,index)=>{
+                                this.state.parentFolderName.map((obj,index)=>{
                                     return <li className="" key={index*Math.random()}><a href="#" onClick={()=>{
                                         this.navigateBackwardToSpecificPosition(index);
-                                    }}>{name}</a></li>
+                                    }}>{obj.name}</a></li>
                                 })
                             }
 
                         </ol>
 
-                    <div className="control-buttons">
-                        {/*{trackModeButton}
+                        <div className="control-buttons">
+                            {/*{trackModeButton}
                         {addToPlayQueueButton}
                         {deleteAllButton}
                         {playAllButton}*/}
-                        <div className="btn-group" role="group">
-                            <button
-                                type="button"
-                                className="btn btn-default"
-                                data-mode="list"
-                                onClick={()=>{this.showFolderSelectDialog()}}>
-                                <i className="fa fa-fw fa-plus"></i>
-                            </button>
-                        </div>
-                        <div className="btn-group" role="group">
-                            <button
-                                type="button"
-                                className="btn btn-default"
-                                data-mode="list"
-                                onClick={()=>{this.navigateBackward()}}>
-                                <i className="fa fa-fw fa-backward"></i>
-                            </button>
+                            <div className="btn-group" role="group">
+                                <button
+                                    type="button"
+                                    className="btn btn-default"
+                                    data-mode="list"
+                                    onClick={()=>{this.showFolderSelectDialog()}}>
+                                    <i className="fa fa-fw fa-plus"></i>
+                                </button>
+                            </div>
+                            <div className="btn-group" role="group">
+                                <button
+                                    type="button"
+                                    className="btn btn-default"
+                                    data-mode="list"
+                                    onClick={()=>{this.navigateBackward()}}>
+                                    <i className="fa fa-fw fa-backward"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="tracks-component">
-                    {this.state.tree.map((folder,index)=>{
-                        return <Folder
-                            key={index+folder.name}
-                            onClick={()=>this.navigateForward(index)}
-                            onPlayClick={
-                                ()=>{
-                                    console.log("essqdqsd");
-                                    this.playOnKodi(folder.path)
+                    <div className="tracks-component">
+                        {this.state.tree.map((folder,index)=>{
+                            return <Folder
+                                key={index+folder.name}
+                                onClick={()=>this.navigateForward(index)}
+                                onPlayClick={
+                                    ()=>{
+                                        console.log("casting to kodi");
+                                        this.playOnKodi(folder.path)
+                                    }
                                 }
-                            }
-                            onDeleteClick={
-                                ()=>{
-                                    this.deletefileDromDbOnIndex(index);
+                                onLocalPlayClick={
+                                    ()=>{
+                                        let tempstate =Object.assign({},this.state);
+                                        //folder in this case a file and thus it is playable
+                                        //activate player
+                                        //open pane
+                                        tempstate.player.active=true;
+                                        tempstate.player.src=folder.path;
+                                        tempstate.isPaneOpen=true;
+                                        tempstate.fileName=folder.name;
+                                        console.log("playing locally");
+                                        this.setState(tempstate);
+                                    }
                                 }
-                            }
-                            folder={folder}
-                        >
-                        </Folder>
-                    })}
+                                onDeleteClick={
+                                    ()=>{
+                                        this.deletefileDromDbOnIndex(index);
+                                    }
+                                }
+                                folder={folder}
+                            >
+                            </Folder>
+                        })}
+                    </div>
                 </div>
             </div>
+
         );
     }
 }

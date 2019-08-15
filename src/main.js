@@ -322,14 +322,12 @@ class KakuApp extends Component {
           </div>
         </div>
         <ReactTooltip/>
+        <ToastContainer/>
       </div>
     );
   }
 }
 
 ReactDOM.render(
-    <div>
-      <ToastContainer/>
-      <KakuApp/>
-    </div>,
+    <KakuApp/>,
     contentPageDOM);

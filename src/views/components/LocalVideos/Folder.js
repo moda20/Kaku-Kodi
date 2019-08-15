@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import image from '../../../public/images/folder-icon.png';
 import videoImage from '../../../public/images/video-icon.png';
+import "./css/index.css";
 
 
 class Folder extends Component {
@@ -22,24 +23,45 @@ class Folder extends Component {
     }
 
 
+    hoverbuttons({
+                     onFirstClick,
+                     onSecondClick
+                 }){
+        if(this.isThisAFile()==true){
+            return [
+                < div className = "fileoverlay" > </div>,
+                <div className="HoverFolderbutton"><a onClick={onFirstClick}> KODI </a></div>,
+                <div className="HoverFolderbuttonSecond"><a onClick={onSecondClick}> Local </a></div>
+            ]
+        }
+    }
+
 
     render() {
         return (
             <div
                 onClick={
-                    this.isThisAFile()==true?this.props.onPlayClick:this.props.onClick
+                    this.isThisAFile()!=true?this.props.onClick:()=>{}
                 }
 
                 data-tip={this.props.folder.name}
-                className="track track-square"
+                className={this.isThisAFile()==true?'track track-square foldercontainer':'track track-square '}
                 onContextMenu={
                     ()=>{
-                        this.props.onDeleteClick();
+                        this.props.onDeleteClick()
                     }
                 }
             >
 
-                <img src={this.isThisAFile()==true?videoImage:image}/>
+                <img className={this.isThisAFile()==true?'filehover':''} src={this.isThisAFile()==true?videoImage:image}/>
+                {
+                    this.hoverbuttons(
+                        {
+                            onFirstClick:this.props.onPlayClick,
+                            onSecondClick:this.props.onLocalPlayClick
+                        }
+                    )
+                }
                 <div className="ribbon">
                     <i className="fa fa-youtube"></i>
                 </div>

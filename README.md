@@ -68,7 +68,7 @@ If you are keen to help Kaku, you can first try to help by translating it into y
 
 # How to develop
 
-Please check our [wiki](https://github.com/EragonJ/Kaku/wiki) here for more information.
+Please check the original repository [wiki](https://github.com/EragonJ/Kaku/wiki) here for more information.
 
 # Supported Streaming Platform
 
@@ -76,7 +76,7 @@ Please check our [wiki](https://github.com/EragonJ/Kaku/wiki) here for more info
 - Vimeo
 - SoundCloud
 - MixCloud
-- Local Video recognition
+- Local Videos
 - ... keep adding :)
 
 # Supported Players

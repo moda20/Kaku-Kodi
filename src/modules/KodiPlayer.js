@@ -10,6 +10,7 @@ var path = require('path');
 var os = require('os');
 var exec = require('child_process').exec;
 
+var servingServer ;
 
 function parse_args() {
     var parser = new ArgumentParser({
@@ -81,8 +82,34 @@ function serve_directory(directory, port) {
     });
 
     server.listen(port);
+    servingServer= server;
 }
 
+
+function killtheServingServer(){
+    return new Promise((res,rej)=>{
+        try{
+            if(servingServer){
+                servingServer.close((data)=>{
+                    res(data);
+                })
+            }else{
+                res(true);
+            }
+
+        }catch (e) {
+            rej(e);
+        }
+    })
+}
+
+function isServerServing(){
+    if(servingServer){
+        return true;
+    }else{
+        return false;
+    }
+}
 
 function kodi_post(network_file, server, port) {
     console.log('Commanding jsonrpc on ' + server + ':' + port + ' to listen for media content on the resolved URL');
@@ -201,6 +228,8 @@ function PlayNow(filepath,server_ip,server_port){
 }
 
 module.exports = {
-    PlayNow:PlayNow
+    PlayNow:PlayNow,
+    killtheServingServer:killtheServingServer,
+    isServerServing:isServerServing()
 }
 //PlayNow(filepath,server_ip,server_port);
