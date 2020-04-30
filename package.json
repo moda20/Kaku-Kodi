@@ -134,7 +134,7 @@
     "firebase": "^2.4.0",
     "font-awesome": "^4.4.0",
     "http": "~0.0.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "kaku-core": "^0.0.15",
     "kodi": "git://github.com/tillbaks/node-kodi.git#master",
     "kodi-ws": "^2.4.3",
