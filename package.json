@@ -98,7 +98,7 @@
     "chai-as-promised": "^7.1.1",
     "chromedriver": "^2.21.2",
     "colors": "^1.1.2",
-    "electron": "^1.8.4",
+    "electron": "^15.5.5",
     "electron-builder": "^20.26.0",
     "electron-reload": "^1.4.0",
     "file-loader": "^4.1.0",
